@@ -21,19 +21,15 @@ public class FilesController {
 
     @PostMapping("/imports")
     public ResponseEntity<GeneralResponse> importProducts(@RequestBody SystemItemImportRequest systemItemImportRequest) {
-        historyService.saveFilesHistory(systemItemImportRequest);
         filesService.saveFiles(systemItemImportRequest);
-        return ResponseEntity.ok(GeneralResponse.getResponse(
-                "Imports done successfully",
-                HttpStatus.OK));
+        historyService.saveFilesHistory(systemItemImportRequest);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<GeneralResponse> deleteProduct(@PathVariable("id") String id) {
         filesService.deleteFileById(id);
-        return ResponseEntity.ok(GeneralResponse.getResponse(
-                "Delete done successfully",
-                HttpStatus.OK));
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/nodes/{id}")
@@ -51,6 +47,7 @@ public class FilesController {
     public ResponseEntity<SystemItemHistoryResponse> getUpdatedHistory(@PathVariable("id") String id,
              @RequestParam(name="dateStart", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime dateStart,
              @RequestParam(name="dateEnd", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime dateEnd) {
-        return ResponseEntity.ok(historyService.getUpdatedHistory(id, dateStart, dateEnd));
+        SystemItemHistoryResponse systemItemHistoryResponse = historyService.getHistory(id, dateStart, dateEnd);
+        return ResponseEntity.ok(systemItemHistoryResponse);
     }
 }

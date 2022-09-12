@@ -6,5 +6,5 @@ import java.time.ZonedDateTime;
 
 public interface HistoryService {
     void saveFilesHistory(SystemItemImportRequest systemItemImportRequest);
-    SystemItemHistoryResponse getUpdatedHistory(String id, ZonedDateTime dateStart, ZonedDateTime dateEnd);
+    SystemItemHistoryResponse getHistory(String id, ZonedDateTime dateStart, ZonedDateTime dateEnd);
 }

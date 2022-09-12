@@ -1,14 +1,33 @@
 package ru.yandex.backend.files.exceptions;
 
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.ConversionNotSupportedException;
+import org.springframework.beans.TypeMismatchException;
+import org.springframework.http.*;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.lang.Nullable;
+import org.springframework.util.CollectionUtils;
+import org.springframework.validation.BindException;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingPathVariableException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ru.yandex.backend.files.model.dto.GeneralResponse;
 import java.time.format.DateTimeParseException;
+import java.util.List;
+import java.util.Set;
 
-public class ExceptionHandler  extends ResponseEntityExceptionHandler {
+@ControllerAdvice
+public class ExceptionHandler extends ResponseEntityExceptionHandler {
 
     @org.springframework.web.bind.annotation.ExceptionHandler(value = {
             MappingException.class,
@@ -17,7 +36,7 @@ public class ExceptionHandler  extends ResponseEntityExceptionHandler {
             IllegalArgumentException.class})
     protected ResponseEntity<Object> badRequest(RuntimeException ex, WebRequest request) {
         GeneralResponse rsp = GeneralResponse.getResponse(
-                ex.getMessage(),
+                "Validation Failed",
                 HttpStatus.BAD_REQUEST);
         return handleExceptionInternal(ex, rsp,
                 new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
@@ -27,9 +46,68 @@ public class ExceptionHandler  extends ResponseEntityExceptionHandler {
             ObjectNotFoundException.class})
     protected ResponseEntity<Object> notFound(RuntimeException ex, WebRequest request) {
         GeneralResponse rsp = GeneralResponse.getResponse(
-                ex.getMessage(),
+                "Item not found",
                 HttpStatus.NOT_FOUND);
         return handleExceptionInternal(ex, rsp,
                 new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
+                                                                  HttpHeaders headers,
+                                                                  HttpStatus status,
+                                                                  WebRequest request) {
+        GeneralResponse rsp = GeneralResponse.getResponse(
+                "Validation Failed",
+                HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(rsp, HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMissingPathVariable(MissingPathVariableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        GeneralResponse rsp = GeneralResponse.getResponse(
+                "Validation Failed",
+                HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(rsp, HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        GeneralResponse rsp = GeneralResponse.getResponse(
+                "Validation Failed",
+                HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(rsp, HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleConversionNotSupported(ConversionNotSupportedException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        GeneralResponse rsp = GeneralResponse.getResponse(
+                "Validation Failed",
+                HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(rsp, HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        GeneralResponse rsp = GeneralResponse.getResponse(
+                "Validation Failed",
+                HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(rsp, HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        GeneralResponse rsp = GeneralResponse.getResponse(
+                "Validation Failed",
+                HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(rsp, HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestPart(MissingServletRequestPartException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        GeneralResponse rsp = GeneralResponse.getResponse(
+                "Validation Failed",
+                HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(rsp, HttpStatus.BAD_REQUEST);
     }
 }

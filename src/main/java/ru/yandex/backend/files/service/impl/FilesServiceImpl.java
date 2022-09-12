@@ -19,14 +19,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 public class FilesServiceImpl implements FilesService {
-    private static final long DAYS_SHIFT = 1;
     private final FilesRepository filesRepository;
     private final FilesMapper filesMapper;
     private final FileValidator fileValidator;
 
     @Override
     public void saveFiles(SystemItemImportRequest systemItemImportRequest) {
-        //fileValidator.validateSystemItemImportRequest(systemItemImportRequest);
+        fileValidator.validateSystemItemImportRequest(systemItemImportRequest);
         filesMapper.itemsFromSystemItemImportRequest(systemItemImportRequest)
                 .forEach(filesRepository::save);
     }
@@ -47,11 +46,7 @@ public class FilesServiceImpl implements FilesService {
 
     @Override
     public SystemItemHistoryResponse findUpdatesByDate(ZonedDateTime to) {
-        if(to == null) {
-            to = ZonedDateTime.now();
-        }
-        ZonedDateTime from = to.minusDays(DAYS_SHIFT);
-        List<Item> items = filesRepository.findFilesByUpdateTime(from, to);
+        List<Item> items = filesRepository.findFilesByUpdateTime(fileValidator.makeFromTime(to), fileValidator.checkToTime(to));
         return filesMapper.systemItemHistoryResponseFromItems(items);
     }
 }

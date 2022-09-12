@@ -3,8 +3,13 @@ package ru.yandex.backend.files.mapper;
 import org.springframework.stereotype.Component;
 import ru.yandex.backend.files.model.dto.SystemItemHistoryResponse;
 import ru.yandex.backend.files.model.dto.SystemItemHistoryUnit;
+import ru.yandex.backend.files.model.dto.SystemItemImport;
+import ru.yandex.backend.files.model.dto.SystemItemImportRequest;
 import ru.yandex.backend.files.model.entity.History;
 import ru.yandex.backend.files.model.entity.Item;
+
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,6 +24,17 @@ public class HistoryMapper extends RootMapper {
                 item.getParentId(),
                 item.getItemType(),
                 item.getItemSize()
+        );
+    }
+
+    public History historyFromSystemItemImport(SystemItemImport systemItemImport,  ZonedDateTime updateTime) {
+        return new History(
+                systemItemImport.getId(),
+                systemItemImport.getUrl(),
+                updateTime,
+                systemItemImport.getParentId(),
+                systemItemImport.getType(),
+                systemItemImport.getSize()
         );
     }
 

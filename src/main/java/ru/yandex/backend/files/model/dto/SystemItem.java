@@ -14,7 +14,7 @@ public class SystemItem {
 
     private String url;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:SS'Z'")
     private ZonedDateTime date;
 
     private String parentId;
