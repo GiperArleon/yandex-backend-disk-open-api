@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.backend.files.exceptions.ObjectNotFoundException;
+import ru.yandex.backend.files.exceptions.ValidationException;
 import ru.yandex.backend.files.mapper.HistoryMapper;
 import ru.yandex.backend.files.model.SystemItemType;
 import ru.yandex.backend.files.model.dto.SystemItemHistoryResponse;
@@ -15,7 +16,6 @@ import ru.yandex.backend.files.repository.FilesRepository;
 import ru.yandex.backend.files.repository.HistoryRepository;
 import ru.yandex.backend.files.service.HistoryService;
 import ru.yandex.backend.files.validation.FileValidator;
-
 import java.time.*;
 import java.util.*;
 import java.util.function.BinaryOperator;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class HistoryServiceImpl implements HistoryService {
-    private final FilesRepository productsRepository;
+    private final FilesRepository filesRepository;
     private final HistoryRepository historyRepository;
     private final HistoryMapper historyMapper;
     private final FileValidator fileValidator;
@@ -41,21 +41,28 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     public SystemItemHistoryResponse getHistory(String id, ZonedDateTime dateStart, ZonedDateTime dateEnd) {
-        Item item = productsRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("no history"));
+        ZonedDateTime finalStart = fileValidator.checkStartTime(dateStart);
+        ZonedDateTime finalEnd = fileValidator.checkEndTime(dateEnd);
+        if(finalStart.isAfter(finalEnd))
+            throw new ValidationException("Start date is after end date");
+
+        Item item = filesRepository.findById(id)
+          .orElseThrow(() -> new ObjectNotFoundException("no history"));
+
         if(item.getItemType() == SystemItemType.FILE) {
-            return getFilesHistory(id, dateStart, dateEnd);
+            return getFilesHistory(id, finalStart, finalEnd);
         }
-        return getFoldersHistory(id, dateStart, dateEnd);
+        return getFoldersHistory(id, finalStart, finalEnd);
     }
 
-    private SystemItemHistoryResponse getFilesHistory(String id, ZonedDateTime dateStart, ZonedDateTime dateEnd) {
-        List<History> history = historyRepository.findHistoryByUpdateTime(id, fileValidator.checkStartTime(dateStart), fileValidator.checkEndTime(dateEnd));
+    protected SystemItemHistoryResponse getFilesHistory(String id, ZonedDateTime dateStart, ZonedDateTime dateEnd) {
+        List<History> history = historyRepository.findHistoryByUpdateTime(id, dateStart, dateEnd);
         return historyMapper.systemItemHistoryResponseFromHistories(history);
     }
 
-    private SystemItemHistoryResponse getFoldersHistory(String id, ZonedDateTime dateStart, ZonedDateTime dateEnd) {
+    protected SystemItemHistoryResponse getFoldersHistory(String id, ZonedDateTime dateStart, ZonedDateTime dateEnd) {
         List<History> historyPoints = historyRepository.findRecursiveHistory(id);
-        //попробуем обнулить папки
+
         historyPoints.forEach(x -> {
             if(x.getItemType() == SystemItemType.FOLDER)
                 x.setItemSize(null);
@@ -93,17 +100,15 @@ public class HistoryServiceImpl implements HistoryService {
             }
         }
 
-        ZonedDateTime effectivelyFinalStart = fileValidator.checkStartTime(dateStart);
-        ZonedDateTime effectivelyFinalEnd = fileValidator.checkEndTime(dateEnd);
         List<SystemItemHistoryUnit> systemItemHistoryUnitList = response.stream()
                 .distinct()
-                .filter(resultUnit -> resultUnit.getDate().compareTo(effectivelyFinalStart) >= 0 &&
-                                      resultUnit.getDate().isBefore(effectivelyFinalEnd))
+                .filter(resultUnit -> resultUnit.getDate().compareTo(dateStart) >= 0 &&
+                                      resultUnit.getDate().isBefore(dateEnd))
                 .collect(Collectors.toList());
         return new SystemItemHistoryResponse(systemItemHistoryUnitList);
     }
 
-    private SizeData calcSize(String parentId, Map<String, List<History>> groupByParentId, SizeData sizeData) {
+    protected SizeData calcSize(String parentId, Map<String, List<History>> groupByParentId, SizeData sizeData) {
         List<History> unitList = groupByParentId.get(parentId);
         if(unitList == null || unitList.isEmpty()) {
             return sizeData;
@@ -121,7 +126,7 @@ public class HistoryServiceImpl implements HistoryService {
         return sizeData;
     }
 
-    private Long getResultSize(SizeData sizeData) {
+    protected Long getResultSize(SizeData sizeData) {
         if(sizeData == null) {
             return null;
         }

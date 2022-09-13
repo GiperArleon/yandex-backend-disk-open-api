@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import ru.yandex.backend.files.model.SystemItemType;
 import javax.persistence.*;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -35,7 +36,7 @@ public class Item {
     @Column(name = "item_size")
     private Long itemSize;
 
-    @OneToMany(fetch = FetchType.LAZY,
+    @OneToMany(fetch = FetchType.EAGER,
             cascade = {CascadeType.REMOVE})
     @JoinColumn(name = "parent_id",
             referencedColumnName = "id", updatable = false)
