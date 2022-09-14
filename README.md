@@ -1,7 +1,7 @@
 # yandex-backend-disk-open-api
 Тестовое задание в школу бэкенд разработки Yandex 2022 (Бэкенд для веб-сервиса хранения файлов).<br />
 Реализованы апи методы:<br />
-#/imports
+## /imports
 POST запрос.<br />
 Импортирует элементы файловой системы. Элементы импортированные повторно обновляют текущие.<br />
 Пример: https://convenience-1972.usr.yandex-academy.ru/imports
@@ -29,7 +29,7 @@ POST запрос.<br />
     "message": "Validation Failed"
    }
 ```
-#/delete/{id}
+## /delete/{id}
 DELETE запрос.<br />
 Удалить элемент по идентификатору. При удалении папки удаляются все дочерние элементы. Доступ к истории обновлений удаленного элемента невозможен.<br />
 Пример: https://convenience-1972.usr.yandex-academy.ru/delete/069cb8d7-bbdd-47d3-ad8f-82ef4c269df1
@@ -53,7 +53,7 @@ DELETE запрос.<br />
     "message": "Item not found"
    }
 ```
-#/nodes/{id}
+## /nodes/{id}
 GET запрос.<br />
 Получить информацию об элементе по идентификатору. При получении информации о папке также предоставляется информация о её дочерних элементах.<br />
 Пример: https://convenience-1972.usr.yandex-academy.ru/nodes/069cb8d7-bbdd-47d3-ad8f-82ef4c269df1
@@ -143,7 +143,7 @@ GET запрос.<br />
     "message": "Item not found"
    }
 ```
-#/updates
+## /updates
 GET запрос.<br /> 
 Получение списка файлов, которые были обновлены за последние 24 часа включительно [date - 24h, date] от времени переданном в запросе.<br />
 Пример запроса за текущий день: https://convenience-1972.usr.yandex-academy.ru/updates
@@ -187,7 +187,7 @@ GET запрос.<br />
     "message": "Validation Failed"
    }
 ```
-#/node/{id}/history
+## /node/{id}/history
 GET запрос.<br />
 Получение истории обновлений по элементу за заданный полуинтервал [from, to). История по удаленным элементам недоступна.<br />
 Пример запроса всей истории: https://convenience-1972.usr.yandex-academy.ru/node/99bc3b31-02d1-4245-ab35-3106c9ee1c65/history
