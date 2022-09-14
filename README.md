@@ -250,3 +250,24 @@ GET запрос.<br />
     "message": "Item not found"
    }
 ```
+## ci/cd
+#### Первая установка
+* собрать проект с профилем spring.profiles.active=docker
+* собрать образ докера (docker build)
+* закинуть образ в docker hub
+* подключиться по vpn
+* зайти на хост (ssh ubuntu@10.21.3.214)
+* создать сеть (sudo docker network create my-network)
+* поставить и запустить postgres (sudo docker run --restart=always --net my-network --name yandex6-postgres -e POSTGRES_PASSWORD=1qazse4 -p 5432:5432 -d postgres:alpine)
+* зайти в контейнер postgres (sudo docker exec -it 7943a5b3fbf5 /bin/bash)
+* зайти в postgres (psql -U postgres -W)
+* создать базу CREATE DATABASE files;
+* поставить и запустить приложение (sudo docker run -d --restart=always --net my-network -p 80:80 -t giperarleon/yandex-files:0.0.2)
+#### Обновление приложения
+* собрать проект с профилем spring.profiles.active=docker
+* собрать образ докера (docker build)
+* закинуть образ в docker hub
+* подключиться по vpn
+* зайти на хост (ssh ubuntu@10.21.3.214)
+* остановить текущее приложение (sudo docker stop 3580e642d932)
+* поставить и запустить новую версию приложения (sudo docker run -d --restart=always --net my-network -p 80:80 -t giperarleon/yandex-files:0.0.x)
