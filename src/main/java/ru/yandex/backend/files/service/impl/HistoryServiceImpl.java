@@ -43,8 +43,8 @@ public class HistoryServiceImpl implements HistoryService {
     public SystemItemHistoryResponse getHistory(String id, ZonedDateTime dateStart, ZonedDateTime dateEnd) {
         ZonedDateTime finalStart = fileValidator.checkStartTime(dateStart);
         ZonedDateTime finalEnd = fileValidator.checkEndTime(dateEnd);
-        if(finalStart.isAfter(finalEnd))
-            throw new ValidationException("Start date is after end date");
+        if(finalStart.compareTo(finalEnd) >= 0)
+            throw new ValidationException("Start date is equal or after end date");
 
         Item item = filesRepository.findById(id)
           .orElseThrow(() -> new ObjectNotFoundException("no history"));
