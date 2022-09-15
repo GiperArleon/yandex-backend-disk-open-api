@@ -8,8 +8,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.backend.files.model.entity.Item;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static utils.ItemTestData.*;
@@ -17,7 +18,7 @@ import static utils.ItemTestData.*;
 @DataJpaTest
 @ActiveProfiles("test")
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
-class FilesRepositoryTest {
+class FilesRepositoryIntegrationTests {
     private static final String ID = "10001";
 
     @Autowired
@@ -25,6 +26,21 @@ class FilesRepositoryTest {
 
     @Test
     void findFilesByUpdateTime() {
+        List<Item> expected = List.of(FILE_1_1_v0, FILE_1_2_v0);
+
+        Item resultRootItem = filesRepository.save(ROOT_FOLDER_FLAT);
+        assertThat(resultRootItem).isNotNull();
+        Item resultItem = filesRepository.save(FIRST_FOLDER_FLAT);
+        assertThat(resultItem).isNotNull();
+        Item resultFileOne = filesRepository.save(FILE_1_1_v0);
+        assertThat(resultFileOne).isNotNull();
+        Item resultFileTwo = filesRepository.save(FILE_1_2_v0);
+        assertThat(resultFileTwo).isNotNull();
+
+        List<Item> actual  = filesRepository.findFilesByUpdateTime(FILE_1_1_v0.getUpdateTime().minusDays(1), FILE_1_1_v0.getUpdateTime());
+
+        assertEquals(expected, actual);
+        filesRepository.deleteById(ROOT_FOLDER_FLAT.getItemId());
     }
 
     @Test

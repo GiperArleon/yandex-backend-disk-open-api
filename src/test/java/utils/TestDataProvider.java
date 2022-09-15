@@ -3,6 +3,7 @@ package utils;
 import ru.yandex.backend.files.model.SystemItemType;
 import ru.yandex.backend.files.model.dto.SystemItem;
 import ru.yandex.backend.files.model.dto.SystemItemImport;
+import ru.yandex.backend.files.model.entity.History;
 import ru.yandex.backend.files.model.entity.Item;
 
 import java.time.ZonedDateTime;
@@ -46,6 +47,23 @@ public class TestDataProvider {
                 itemType,
                 itemSize,
                 new ArrayList<>()
+        );
+    }
+
+    public static History createHistory(
+            String itemId,
+            String itemUrl,
+            ZonedDateTime updateTime,
+            String parentId,
+            SystemItemType itemType,
+            Long itemSize) {
+        return new History(
+                itemId == null ? UUID.randomUUID().toString() : itemId,
+                itemUrl,
+                updateTime,
+                parentId,
+                itemType,
+                itemSize
         );
     }
 
