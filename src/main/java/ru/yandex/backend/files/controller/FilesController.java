@@ -6,13 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.backend.files.exceptions.ValidationException;
-import ru.yandex.backend.files.model.dto.GeneralResponse;
 import ru.yandex.backend.files.model.dto.SystemItem;
 import ru.yandex.backend.files.model.dto.SystemItemHistoryResponse;
 import ru.yandex.backend.files.model.dto.SystemItemImportRequest;
 import ru.yandex.backend.files.service.FilesService;
 import ru.yandex.backend.files.service.HistoryService;
-
 import java.time.ZonedDateTime;
 
 @RestController
@@ -22,7 +20,7 @@ public class FilesController {
     private final HistoryService historyService;
 
     @PostMapping("/imports")
-    public ResponseEntity<GeneralResponse> importProducts(@RequestBody SystemItemImportRequest systemItemImportRequest) {
+    public ResponseEntity<Void> importFiles(@RequestBody SystemItemImportRequest systemItemImportRequest) {
         try {
             filesService.saveFiles(systemItemImportRequest);
             historyService.saveFilesHistory(systemItemImportRequest);
@@ -33,13 +31,13 @@ public class FilesController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<GeneralResponse> deleteProduct(@PathVariable("id") String id) {
+    public ResponseEntity<Void> deleteFile(@PathVariable("id") String id) {
         filesService.deleteFileById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/nodes/{id}")
-    public ResponseEntity<SystemItem> findProduct(@PathVariable("id") String id) {
+    public ResponseEntity<SystemItem> findFile(@PathVariable("id") String id) {
         return ResponseEntity.ok(filesService.getFileById(id));
     }
 

@@ -24,8 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.verify;
+import static utils.ItemTestData.FILE_1_1_v0;
 import static utils.SystemItemImportTestData.IMPORT_FILE_1_1;
-import static utils.ItemTestData.FILE_1_1;
 
 @ExtendWith(MockitoExtension.class)
 class HistoryServiceUnitTests {
@@ -95,7 +95,7 @@ class HistoryServiceUnitTests {
         SystemItemHistoryResponse systemItemHistoryResponse = mock(SystemItemHistoryResponse.class);
 
         when(filesRepository.findById(ID))
-                .thenReturn(Optional.of(FILE_1_1));
+                .thenReturn(Optional.of(FILE_1_1_v0));
         BDDMockito
                 .given(fileValidator.checkStartTime(dateStart))
                 .willReturn(dateStart);
